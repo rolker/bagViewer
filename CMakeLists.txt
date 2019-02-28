@@ -2,9 +2,6 @@ cmake_minimum_required(VERSION 3.5.1)
 
 project(bagViewer)
 
-# The debug build will have a 'd' postfix
-SET(CMAKE_DEBUG_POSTFIX  "d")
-
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_AUTOUIC ON)
@@ -21,13 +18,15 @@ endif(Qt5Widgets_FOUND)
 
 find_package(OpenGL)
 
-set_property(SOURCE BagViewer.cpp APPEND PROPERTY OBJECT_DEPENDS ${PROJECT_BINARY_DIR}/ui_BagViewer.h)
-
 set (SHADERS vertex.glsl tes.glsl geometry.glsl fragment.glsl)
 
 set ( RESOURCES
  resources.qrc
 )
+
+find_path(BAG_INCLUDE_DIR NAMES bag.h)
+find_library(BAG_LIBRARY bag)
+include_directories(${BAG_INCLUDE_DIR})
 
 if(CMAKE_COMPILER_IS_GNUCXX)
     add_definitions(-std=c++11)
@@ -41,6 +40,6 @@ endif()
 add_executable(bagViewer ${HDR} ${SRC} ${RESOURCES})
 
 qt5_use_modules(bagViewer Widgets OpenGL)
-target_link_libraries(bagViewer ${OPENGL_gl_LIBRARY} bag ${QT_LIBRARIES})
+target_link_libraries(bagViewer ${OPENGL_gl_LIBRARY} ${BAG_LIBRARY} ${QT_LIBRARIES})
 
 INSTALL(TARGETS bagViewer RUNTIME DESTINATION bin)
