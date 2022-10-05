@@ -25,12 +25,8 @@ set ( RESOURCES
 )
 
 find_path(BAG_INCLUDE_DIR NAMES bag.h)
-find_library(BAG_LIBRARY bag)
+find_library(BAG_LIBRARY NAMES bag baglib baglibd)
 include_directories(${BAG_INCLUDE_DIR})
-
-if(CMAKE_COMPILER_IS_GNUCXX)
-    add_definitions(-std=c++11)
-endif(CMAKE_COMPILER_IS_GNUCXX)
 
 set( HDR BagViewer.h BagGL.h)
 set( SRC main.cpp BagViewer.cpp BagGL.cpp BagIO.cpp)
@@ -41,5 +37,12 @@ add_executable(bagViewer ${HDR} ${SRC} ${RESOURCES})
 
 qt5_use_modules(bagViewer Widgets OpenGL)
 target_link_libraries(bagViewer ${OPENGL_gl_LIBRARY} ${BAG_LIBRARY} ${QT_LIBRARIES})
+
+set_target_properties(bagViewer
+    PROPERTIES
+        CXX_STANDARD 14
+        CMAKE_CXX_STANDARD_REQUIRED ON
+        CMAKE_CXX_EXTENSIONS OFF
+)
 
 INSTALL(TARGETS bagViewer RUNTIME DESTINATION bin)

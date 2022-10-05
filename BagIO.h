@@ -9,7 +9,7 @@
 #include <QMutex>
 #include <QWaitCondition>
 #include <QImage>
-#include "bag.h"
+#include "bag_dataset.h"
 #include "Bounds.h"
 
 struct TileGL;
@@ -23,7 +23,7 @@ struct TileData
 
 typedef std::shared_ptr<TileData> TileDataPtr;
 
-typedef std::pair<u32,u32> TileIndex2D;
+typedef std::pair<uint32_t,uint32_t> TileIndex2D;
 
 struct Tile
 {
@@ -51,23 +51,16 @@ public:
     
     struct MetaData
     {
-        float minElevation, maxElevation;
+        float minElevation = 0.0;
+        float maxElevation = 0.0;
         QVector3D size;
         QVector3D swBottomCorner;
         
-        u32 ncols,nrows;
-        double dx,dy;
+        uint32_t ncols = 0;
+        uint32_t nrows = 0;
+        double dx = 0.0;
+        double dy = 0.0;
         bool variableResolution;
-        
-        MetaData():
-            minElevation(0.0),
-            maxElevation(0.0),
-            ncols(0),
-            nrows(0),
-            dx(0.0),
-            dy(0.0)
-        {
-        }
     };
     
     BagIO(QObject *parent = 0);
@@ -76,7 +69,7 @@ public:
     bool open(QString const &bagFileName);
     void close();
     
-    u32 getTileSize() const;
+    uint32_t getTileSize() const;
     
     //std::vector<TilePtr> getOverviewTiles();
     MetaData getMeta();
@@ -89,15 +82,15 @@ protected:
     void run() Q_DECL_OVERRIDE;
     
 private:
-    TilePtr loadTile(bagHandle &bag, TileIndex2D tileIndex, MetaData &meta) const; 
-    TilePtr loadVarResTile(bagHandle &bag, TileIndex2D const tileIndex, MetaData const &meta, Tile const &parentTile) const; 
+    TilePtr loadTile(BAG::Dataset &bag, TileIndex2D tileIndex, MetaData &meta) const; 
+    TilePtr loadVarResTile(BAG::Dataset &bag, TileIndex2D const tileIndex, MetaData const &meta, Tile const &parentTile) const; 
     
     QMutex mutex;
     QWaitCondition condition;
-    bool restart;
-    bool abort;
+    bool restart = false;
+    bool abort = false;
     
-    u32 tileSize;
+    uint32_t tileSize = 128;
     //TileMap overviewTiles;
     MetaData meta;
     QString filename;

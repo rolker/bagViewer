@@ -563,7 +563,7 @@ void BagGL::newTile(TilePtr tile, bool isVR)
 {
     if(isVR)
     {
-        u32 ts = bag.getTileSize();
+        uint32_t ts = bag.getTileSize();
         vrTiles[tile->lowerLeftIndex] = tile;
         TileIndex2D parentIndex(tile->lowerLeftIndex.first/ts,tile->lowerLeftIndex.second/ts);
         if(overviewTiles.count(parentIndex))
