@@ -51,16 +51,6 @@ void BagIO::run()
         {
             MetaData meta;
             
-            bool isVarRes = bag->getVRRefinements();
-            qDebug() << "variable resolution? " << isVarRes;
-           
-            if(isVarRes)
-            {
-                // bagGetOptDatasetInfo(&bag, VarRes_Metadata_Group);
-                // bagGetOptDatasetInfo(&bag, VarRes_Refinement_Group);
-            }
-            
-            meta.variableResolution = isVarRes;
             
             const auto& bm = bag->getMetadata();
             
@@ -73,14 +63,18 @@ void BagIO::run()
             {
                 auto minmax = elevationLayer->getDescriptor()->getMinMax();
 
-                if(isVarRes)
+                bool isVarRes = false;
+                auto vrRefinements = bag->getVRRefinements();
+                if(vrRefinements)
                 {
-                    auto vrRefinements = bag->getVRRefinements();
+                    isVarRes = true;
                     auto desc = std::dynamic_pointer_cast<BAG::VRRefinementsDescriptor>(vrRefinements->getDescriptor());
                     minmax = desc->getMinMaxDepth();
                     meta.minElevation = std::get<0>(minmax);
                     meta.maxElevation = std::get<1>(minmax);
                 }
+                qDebug() << "variable resolution? " << isVarRes;
+                meta.variableResolution = isVarRes;
             }
             
             meta.ncols = bm.columns();
